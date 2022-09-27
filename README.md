@@ -9,13 +9,13 @@ There are three ends used for the CMS.
 
 ## Development Instructions
 ### CMS Frontend
-The CMS frontend is located in the [cms-frontend](cms-frontend/) directory.
+The CMS frontend is located in the [cms-frontend](cms-frontend/) directory.  
 [Instructions](cms-frontend/README.md)
 
 ### Client Frontend
-The client frontend is located in the [client-frontend](client-frontend/) directory.
+The client frontend is located in the [client-frontend](client-frontend/) directory.  
 [Instructions](client-frontend/README.md)
-~~~~
+
 ### CMS Frontend
-The backend is located in the [backend](backend/) directory.
+The backend is located in the [backend](backend/) directory.  
 [Instructions](backend/README.md)
