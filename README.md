@@ -16,6 +16,6 @@ The CMS frontend is located in the [cms-frontend](cms-frontend/) directory.
 The client frontend is located in the [client-frontend](client-frontend/) directory.  
 [Instructions](client-frontend/README.md)
 
-### CMS Frontend
+### Backend
 The backend is located in the [backend](backend/) directory.  
 [Instructions](backend/README.md)
