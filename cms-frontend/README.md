@@ -1,39 +1,61 @@
-# Nuxt 3 Minimal Starter
-
+# CMS Frontend
 Look at the [nuxt 3 documentation](https://v3.nuxtjs.org) to learn more.
 
 ## Setup
 
-Make sure to install the dependencies:
+Install the dependencies with `yarn` before running:
 
 ```bash
-# yarn
 yarn install
+```
 
-# npm
+When using `npm`:
+
+```bash
 npm install
-
-# pnpm
-pnpm install --shamefully-hoist
 ```
 
 ## Development Server
 
-Start the development server on http://localhost:3000
+Start the development server with `yarn` on http://localhost:3000
+
+```bash
+yarn dev
+```
+
+When using `npm`:
 
 ```bash
 npm run dev
 ```
 
+To open the application in the browser after running use the `-o` flag (`yarn` only):
+
+```bash
+yarn dev -o
+```
+
 ## Production
 
-Build the application for production:
+Build the application for production with `yarn`:
+
+```bash
+yarn build
+```
+
+When using `npm`:
 
 ```bash
 npm run build
 ```
 
-Locally preview production build:
+Locally preview production build with `yarn`:
+
+```bash
+yarn run preview
+```
+
+When using `npm`:
 
 ```bash
 npm run preview
