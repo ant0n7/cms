@@ -1,6 +1,5 @@
 package com.example.demo.domain.appuser;
 
-import com.example.demo.domain.appclass.ClassRepository;
 import com.example.demo.domain.appuser.dto.CreateUserDTO;
 import com.example.demo.domain.appuser.dto.LoginDTO;
 import com.example.demo.domain.exceptions.InvalidEmailException;
@@ -32,7 +31,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final SubjectRepository subjectRepository;
-    private final ClassRepository classRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final String[] errorMessages = new String[]
@@ -183,22 +181,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                users.addAll(userRepository.getUsersByClass(UUID.fromString(c)));
            }
 
-            List<UUID> students = new ArrayList<>();
-            for (String u: users){
-                if (userRepository.findAllStudents().contains(u)){
-                    students.add(UUID.fromString(u));
-                }
-            }
-            return convertIdToUser(students);
-        }else {
-            throw new InstanceNotFoundException();
-        }
-    }
-
-    @Override
-    public List<User> findUsersByClass(UUID id) throws InstanceNotFoundException {
-        if (classRepository.existsById(id)){
-            List<String> users = userRepository.getUsersByClass(id);
             List<UUID> students = new ArrayList<>();
             for (String u: users){
                 if (userRepository.findAllStudents().contains(u)){
