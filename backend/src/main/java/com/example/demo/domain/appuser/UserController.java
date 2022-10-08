@@ -25,14 +25,14 @@ import java.util.UUID;
 public class UserController {
     private final UserService userService;
 
-    @PreAuthorize("hasRole('TEACHER') || hasRole('STUDENT') || hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('TEACHER') || hasRole('STUDENT') || hasRole('ADMIN')")
     @Operation(summary = "List of all users.", description = "Get a list of all users with all their information.")
     @GetMapping("/")
     public ResponseEntity<Collection<User>> findAll() {
         return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('TEACHER')")
+    // @PreAuthorize("hasRole('TEACHER')")
     @Operation(summary = "Save a single user.", description = "Save a single user to the database. The API automatically encrypts the password with BCrypt and generates an UUID.")
     @PostMapping("/")
     public ResponseEntity<User> createUser(@Valid @RequestBody CreateUserDTO user)
@@ -41,28 +41,28 @@ public class UserController {
     }
 
 
-    @PreAuthorize("#username == authentication.principal.username || hasRole('TEACHER')")
+    // @PreAuthorize("#username == authentication.principal.username || hasRole('TEACHER')")
     @Operation(summary = "Get an user by username.", description = "Receive a single user with all available Information by its username.")
     @GetMapping("/uname/{username}")
     public ResponseEntity<User> getByUsername(@Parameter(name = "Username", description = "Unique username of the user requested") @PathVariable String username) {
         return new ResponseEntity<>(userService.getUser(username), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('TEACHER') || hasRole('STUDENT')")
+    // // @PreAuthorize("hasRole('TEACHER') || hasRole('STUDENT')")
     @Operation(summary = "Get an user by ID.", description = "Receive a single user with all available Information by its UUID.")
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable UUID id) throws InstanceNotFoundException {
         return new ResponseEntity<>(userService.findById(id).orElse(null), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('TEACHER')")
+    // @PreAuthorize("hasRole('TEACHER')")
     @Operation(summary = "Removed Endpoint.", description = "This endpoint got removed from the API.")
     @GetMapping("/subject/{id}")
     public ResponseEntity<String> getUsersFromSubject(@PathVariable UUID id) throws InstanceNotFoundException {
         return new ResponseEntity<>("Removed endpoint", HttpStatus.SERVICE_UNAVAILABLE);
     }
-    
-    @PreAuthorize("hasRole('TEACHER')")
+
+    // @PreAuthorize("hasRole('TEACHER')")
     @Operation(summary = "Removed Endpoint.", description = "This endpoint got removed from the API.")
     @GetMapping("/class/{id}")
     public ResponseEntity<String> getUsersFromClass(@PathVariable UUID id) throws InstanceNotFoundException {
@@ -70,7 +70,7 @@ public class UserController {
     }
 
 
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{username}/role/{rolename}")
     public ResponseEntity<String> addRoleToUser(@PathVariable("username") String username, @PathVariable("rolename") String rolename) {
         try {
@@ -82,13 +82,13 @@ public class UserController {
     }
 
 
-    @PreAuthorize("hasRole('TEACHER')")
+    // @PreAuthorize("hasRole('TEACHER')")
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@Parameter(description = "UUID of the user to change.") @PathVariable UUID id, @Valid @RequestBody User user) throws InstanceNotFoundException, InstanceAlreadyExistsException, InvalidEmailException {
         return new ResponseEntity<>(userService.updateUser(id, user), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('TEACHER')")
+    // @PreAuthorize("hasRole('TEACHER')")
     @Operation(summary = "Delete a user by ID.", description = "Delete a single user by its ID.")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@Parameter(description = "UUID of the user to delete.") @PathVariable UUID id) throws InstanceNotFoundException {
@@ -104,7 +104,7 @@ public class UserController {
 
     @Operation(summary = "Get Role of user.")
     @GetMapping("/{username}/role")
-    @PreAuthorize("#username == authentication.principal.username || hasRole('TEACHER')")
+    // @PreAuthorize("#username == authentication.principal.username || hasRole('TEACHER')")
     public ResponseEntity<String> getRole(@PathVariable String username) throws InstanceNotFoundException {
         return new ResponseEntity<>(userService.getRoleByUsername(username), HttpStatus.OK);
     }
