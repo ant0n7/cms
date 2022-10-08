@@ -7,7 +7,6 @@ import com.example.demo.domain.role.Role;
 import com.example.demo.domain.role.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.validator.routines.EmailValidator;
-import org.apache.logging.log4j.Level;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,42 +23,45 @@ import javax.transaction.Transactional;
 
 import java.util.*;
 
-@Service @RequiredArgsConstructor @Transactional
+@Service
+@RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final String[] errorMessages = new String[]
-            {"User not found", "Email is not valid", "Username already exists", "Email already exists"};
+    private final String[] errorMessages = new String[] { "User not found", "Email is not valid",
+            "Username already exists", "Email already exists" };
 
     @Override
-//    This method is used for security authentication, use caution when changing this
+    // This method is used for security authentication, use caution when changing
+    // this
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         User user = userRepository.findByUsername(username);
 
-        if (user == null){
+        if (user == null) {
             throw new UsernameNotFoundException("User not found");
-        }
-        else {
-//          Construct a valid set of Authorities (needs to implement Granted Authorities)
+        } else {
+            // Construct a valid set of Authorities (needs to implement Granted Authorities)
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
             user.getRoles().forEach(role -> {
-                authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getRolename()));
-                role.getAuthorities().forEach(authority -> authorities.add(new SimpleGrantedAuthority(authority.getName())));
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRolename()));
+                role.getAuthorities()
+                        .forEach(authority -> authorities.add(new SimpleGrantedAuthority(authority.getName())));
             });
-//            return a spring internal user object that contains authorities and roles
-            return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+            // return a spring internal user object that contains authorities and roles
+            return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
+                    authorities);
         }
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(
             Collection<Role> roles) {
-        List<GrantedAuthority> authorities
-                = new ArrayList<>();
-        for (Role role: roles) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (Role role : roles) {
             authorities.add(new SimpleGrantedAuthority(role.getRolename()));
             role.getAuthorities().stream()
                     .map(authority -> new SimpleGrantedAuthority(authority.getName()))
@@ -81,7 +83,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
-        //Set default role of every new user to USER
+        // Set default role of every new user to USER
         User user = userMapper.createUserDTOToUser(userDto);
         user.setRoles(List.of(roleRepository.findByRolename("STUDENT")));
         return userRepository.saveAndFlush(user);
@@ -98,29 +100,27 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public User getUser(String username) {
         return userRepository.findByUsername(username);
     }
+
     @Override
-    public Optional<User> findById(UUID id) throws InstanceNotFoundException{
-        if(hasAccess(id)){
+    public Optional<User> findById(UUID id) throws InstanceNotFoundException {
+        if (hasAccess(id)) {
 
         }
-        if (userRepository.existsById(id)){
+        if (userRepository.existsById(id)) {
             return userRepository.findById(id);
-        }
-        else {
+        } else {
             throw new InstanceNotFoundException("User not found");
         }
     }
 
-
     @Override
     public List<User> findAll() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (getRoleByUsername(auth.getName()).equals("STUDENT")){
+        if (getRoleByUsername(auth.getName()).equals("STUDENT")) {
             return List.of(userRepository.findByUsername(auth.getName()));
         }
         return userRepository.findAll();
     }
-
 
     private boolean hasAccess(UUID id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -129,7 +129,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             return id.equals(userRepository.findByUsername(auth.getName()).getId()) ||
                     auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_TEACHER"));
         } catch (Exception e) {
-            // do not grant access if user couldn't be found/verified to prevent giving a potential attacker
+            // do not grant access if user couldn't be found/verified to prevent giving a
+            // potential attacker
             // information
 
             return false;
@@ -137,21 +138,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User updateUser(UUID id, User user) throws InstanceNotFoundException, InvalidEmailException, InstanceAlreadyExistsException {
-        if (!userRepository.existsById(id)) throw new InstanceNotFoundException("User does not exist.");
+    public User updateUser(UUID id, User user)
+            throws InstanceNotFoundException, InvalidEmailException, InstanceAlreadyExistsException {
+        if (!userRepository.existsById(id))
+            throw new InstanceNotFoundException("User does not exist.");
 
         if (!EmailValidator.getInstance().isValid(user.getEmail())) {
             throw new InvalidEmailException(errorMessages[1]);
         }
-        //When updating a user he needs the possibility to keep his username, but in case he changes it we need to
+        // When updating a user he needs the possibility to keep his username, but in
+        // case he changes it we need to
         // check if it's already in use
-        if (userRepository.findByUsername(user.getUsername()) != null &&  /* true = username may be updated*/
-                /*true = username does not belong to updated profile */
+        if (userRepository.findByUsername(user.getUsername()) != null && /* true = username may be updated */
+        /* true = username does not belong to updated profile */
                 !user.getUsername().equals(userRepository.findById(user.getId()).get().getUsername())) {
             throw new InstanceAlreadyExistsException(errorMessages[2]);
         }
-        if (userRepository.findByEmail(user.getEmail()) != null &&  /* true = email maybe updated*/
-                /*true = email does not belong to updated profile */
+        if (userRepository.findByEmail(user.getEmail()) != null && /* true = email maybe updated */
+        /* true = email does not belong to updated profile */
                 !user.getEmail().equals(userRepository.findById(user.getId()).get().getEmail())) {
             throw new InstanceAlreadyExistsException(errorMessages[3]);
         }
@@ -165,7 +169,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public void deleteUser(UUID id) throws InstanceNotFoundException {
-        if (!userRepository.existsById(id)) throw new InstanceNotFoundException("User does not exist.");
+        if (!userRepository.existsById(id))
+            throw new InstanceNotFoundException("User does not exist.");
         userRepository.deleteFromClass(id);
         userRepository.deleteById(id);
     }
@@ -174,10 +179,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public boolean verifyLogin(LoginDTO loginDTO) {
         try {
             User user = userRepository.findByUsername(loginDTO.getUsername());
-            if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())){
+            if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
                 return true;
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
         return false;
@@ -188,9 +193,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.getRole(username);
     }
 
-    private List<User> convertIdToUser(List<UUID> uuid){
+    private List<User> convertIdToUser(List<UUID> uuid) {
         List<User> obj = new ArrayList<>();
-        for (UUID u: uuid) {
+        for (UUID u : uuid) {
             obj.add(userRepository.findById(u).orElse(null));
         }
         return obj;

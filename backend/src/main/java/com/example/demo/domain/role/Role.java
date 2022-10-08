@@ -26,18 +26,10 @@ public class Role {
 
     @JsonBackReference
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "tbl_role_authorities",
-            joinColumns = @JoinColumn(
-                    name = "role_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(
-                    name = "authority_id", referencedColumnName = "id"))
+    @JoinTable(name = "tbl_role_authorities", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
     private List<Authority> authorities;
-
 
     public String toString() {
         return getRolename();
     }
-
-
 }

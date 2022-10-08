@@ -1,6 +1,5 @@
 package com.example.demo.domain.role;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,7 +27,8 @@ public class RoleController {
 
     // @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<Role> getRoleById(@Parameter(description = "UUID of the role requested.") @PathVariable UUID id) {
+    public ResponseEntity<Role> getRoleById(
+            @Parameter(description = "UUID of the role requested.") @PathVariable UUID id) {
         return new ResponseEntity<>(roleService.getRoleById(id), HttpStatus.OK);
     }
 
@@ -40,14 +40,16 @@ public class RoleController {
 
     // @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@Parameter(description = "UUID of the role to delete.") @PathVariable UUID id) throws InstanceNotFoundException {
+    public ResponseEntity<String> delete(@Parameter(description = "UUID of the role to delete.") @PathVariable UUID id)
+            throws InstanceNotFoundException {
         roleService.deleteRole(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<Role> update(@Parameter(description = "UUID of the role to change.") @PathVariable UUID id, @Valid @RequestBody Role role) throws InstanceNotFoundException {
+    public ResponseEntity<Role> update(@Parameter(description = "UUID of the role to change.") @PathVariable UUID id,
+            @Valid @RequestBody Role role) throws InstanceNotFoundException {
         return new ResponseEntity<>(roleService.updateRole(id, role), HttpStatus.OK);
     }
 
