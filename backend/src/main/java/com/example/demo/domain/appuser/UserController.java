@@ -56,16 +56,17 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('TEACHER')")
-    @Operation(summary = "Get students by subject id.", description = "Receive a list of students that are attending the given subject")
+    @Operation(summary = "Removed Endpoint.", description = "This endpoint got removed from the API.")
     @GetMapping("/subject/{id}")
-    public ResponseEntity<List<User>> getUsersFromSubject(@PathVariable UUID id) throws InstanceNotFoundException {
-        return new ResponseEntity<>(userService.findUsersBySubject(id), HttpStatus.OK);
+    public ResponseEntity<String> getUsersFromSubject(@PathVariable UUID id) throws InstanceNotFoundException {
+        return new ResponseEntity<>("Removed endpoint", HttpStatus.SERVICE_UNAVAILABLE);
     }
+    
     @PreAuthorize("hasRole('TEACHER')")
     @Operation(summary = "Removed Endpoint.", description = "This endpoint got removed from the API.")
     @GetMapping("/class/{id}")
     public ResponseEntity<String> getUsersFromClass(@PathVariable UUID id) throws InstanceNotFoundException {
-        return new ResponseEntity<>("Removed endpoint", HttpStatus.OK);
+        return new ResponseEntity<>("Removed endpoint", HttpStatus.SERVICE_UNAVAILABLE);
     }
 
 

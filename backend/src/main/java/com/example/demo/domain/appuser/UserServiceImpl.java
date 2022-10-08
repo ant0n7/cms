@@ -5,7 +5,6 @@ import com.example.demo.domain.appuser.dto.LoginDTO;
 import com.example.demo.domain.exceptions.InvalidEmailException;
 import com.example.demo.domain.role.Role;
 import com.example.demo.domain.role.RoleRepository;
-import com.example.demo.domain.subjects.SubjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.logging.log4j.Level;
@@ -30,7 +29,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final SubjectRepository subjectRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final String[] errorMessages = new String[]
@@ -170,27 +168,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (!userRepository.existsById(id)) throw new InstanceNotFoundException("User does not exist.");
         userRepository.deleteFromClass(id);
         userRepository.deleteById(id);
-    }
-
-    @Override
-    public List<User> findUsersBySubject(UUID id) throws InstanceNotFoundException {
-       if (subjectRepository.existsById(id)){
-            List<String> classes = userRepository.getClassesBySubject(id);
-           List<String> users = new ArrayList<>();
-           for (String c: classes) {
-               users.addAll(userRepository.getUsersByClass(UUID.fromString(c)));
-           }
-
-            List<UUID> students = new ArrayList<>();
-            for (String u: users){
-                if (userRepository.findAllStudents().contains(u)){
-                    students.add(UUID.fromString(u));
-                }
-            }
-            return convertIdToUser(students);
-        }else {
-            throw new InstanceNotFoundException();
-        }
     }
 
     @Override

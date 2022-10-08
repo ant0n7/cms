@@ -19,8 +19,6 @@ public interface UserService {
     User updateUser(UUID id, User user) throws InstanceNotFoundException, InvalidEmailException, InstanceAlreadyExistsException;
     void deleteUser(UUID id) throws InstanceNotFoundException;
 
-    List<User> findUsersBySubject(UUID id) throws InstanceNotFoundException;
-
     boolean verifyLogin(LoginDTO loginDTO);
 
     String getRoleByUsername(String username);
