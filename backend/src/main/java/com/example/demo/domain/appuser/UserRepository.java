@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-    User findByUsername (String username);
+    User findByUsername(String username);
 
     @Query(value = "select class_id  from tbl_class_subjects tcs where tcs.subject_id = :subjectUUID", nativeQuery = true)
     List<String> getClassesBySubject(@Param("subjectUUID") UUID subjectUUID);

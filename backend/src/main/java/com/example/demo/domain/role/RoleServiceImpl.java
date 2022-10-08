@@ -14,7 +14,7 @@ import java.util.UUID;
 @Transactional
 @Service
 @RequiredArgsConstructor
-public class RoleServiceImpl implements RoleService{
+public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
     private final AuthorityRepository authorityRepository;
 
@@ -37,7 +37,7 @@ public class RoleServiceImpl implements RoleService{
     }
 
     @Override
-    public void addAuthorityToRole( String rolename, String authorityname) {
+    public void addAuthorityToRole(String rolename, String authorityname) {
         Authority authority = authorityRepository.findByName(authorityname);
         Role role = roleRepository.findByRolename(rolename);
         role.getAuthorities().add(authority);
@@ -45,14 +45,16 @@ public class RoleServiceImpl implements RoleService{
 
     @Override
     public Role updateRole(UUID id, Role newRole) throws InstanceNotFoundException {
-        if (!roleRepository.existsById(id)) throw new InstanceNotFoundException("Role does not exist.");
+        if (!roleRepository.existsById(id))
+            throw new InstanceNotFoundException("Role does not exist.");
 
         newRole.setId(id);
         return roleRepository.save(newRole);
     }
 
     public void deleteRole(UUID id) throws InstanceNotFoundException {
-        if (!roleRepository.existsById(id)) throw new InstanceNotFoundException("Role does not exist.");
+        if (!roleRepository.existsById(id))
+            throw new InstanceNotFoundException("Role does not exist.");
         roleRepository.deleteById(id);
     }
 }

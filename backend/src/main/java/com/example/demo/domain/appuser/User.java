@@ -1,6 +1,5 @@
 package com.example.demo.domain.appuser;
 
-
 import com.example.demo.domain.role.Role;
 import lombok.*;
 import org.hibernate.annotations.*;
