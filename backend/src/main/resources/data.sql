@@ -48,3 +48,9 @@ insert into tbl_user_role (user_id, role_id) values ('d1c0502a-4fb5-4da4-aae9-d3
 insert into tbl_user_role (user_id, role_id) values ('ee883683-e1ef-44f4-a3ee-45106686e060', '2f1e573f-6290-4581-b54b-7e3ba2c98832');
 insert into tbl_user_role (user_id, role_id) values ('c8b37eed-b152-426d-a4dd-b56895eca322', '2f1e573f-6290-4581-b54b-7e3ba2c98832');
 insert into tbl_user_role (user_id, role_id) values ('4c6e2546-31d0-465e-99cb-58acc9bc5b3b', '2f1e573f-6290-4581-b54b-7e3ba2c98832');
+
+insert into tbl_data_employee (id, firstname, lastname, email) values ('1362d072-e2de-49b0-9129-0576b4d7046c', 'Randee', 'Coleshill', 'rcoleshill0@company.com');
+insert into tbl_data_employee (id, firstname, lastname, email) values ('625a7b68-e6eb-4d85-bb8c-0c51e0977cf6', 'Ricca', 'Seagood', 'rseagood@company.com');
+insert into tbl_data_employee (id, firstname, lastname, email) values ('fffbabe7-996e-495d-aee1-806b4f896711', 'Edgar', 'Gerardot', 'egerardot@company.com');
+insert into tbl_data_employee (id, firstname, lastname, email) values ('3928a358-dc84-4272-be40-4fcc6f2b7567', 'Joshuah', 'Willowby', 'jwillowby@company.com');
+insert into tbl_data_employee (id, firstname, lastname, email) values ('65c4a3c2-27cd-46cb-8a32-c8aeb2f51cd8', 'Kristofer', 'Peschmann', 'kpeschmann@company.com');

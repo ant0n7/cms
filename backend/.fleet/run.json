@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+          "type": "spring-boot",
+          "name": "CMS Backend",
+          "workingDir": "backend/src/main/java",
+          "mainClass": "DemoApplication",
+          "module": "com.example.demo",
+        },
+
+    ]
+}
