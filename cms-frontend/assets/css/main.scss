@@ -1,0 +1,13 @@
+@use '~bootstrap/scss/bootstrap' as bootstrap;
+@use 'variables';
+@use 'bars';
+
+* {
+  font-family: futura-pt, sans-serif;
+}
+
+main {
+  p {
+    font-size: 20px;
+  }
+}
