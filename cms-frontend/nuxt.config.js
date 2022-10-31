@@ -75,6 +75,7 @@ export default {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     '@nuxtjs/auth-next',
+    '@nuxtjs/toast',
   ],
 
   router: {
@@ -101,7 +102,7 @@ export default {
         endpoints: {
           login: { url: '/users/login', method: 'post' },
           logout: { url: '/users/logout', method: 'post' },
-          user: { url: '/users/me2', method: 'get' },
+          user: { url: '/users/me', method: 'get' },
         },
       },
     },
@@ -111,6 +112,21 @@ export default {
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
     baseURL: 'http://localhost:8080/api',
+  },
+
+  toast: {
+    position: 'bottom-right',
+    duration: 3000,
+    register: [
+      // Register custom toasts
+      {
+        name: 'my-error',
+        message: 'Oops...Something went wrong',
+        options: {
+          type: 'error',
+        },
+      },
+    ],
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

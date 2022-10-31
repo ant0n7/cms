@@ -1,19 +1,37 @@
 <template>
   <div>
-    <form @submit.prevent="userLogin">
-      <div>
-        <label>Username</label>
-        <input v-model="login.username" type="text" />
+    <h1 class="mt-5">DetkenCMS</h1>
+    <div class="container-fluid">
+      <div class="row mt-4">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <form @submit.prevent="loginUser(login)">
+            <div>
+              <label for="username-input" class="">Username</label>
+              <input
+                id="username-input"
+                v-model="login.username"
+                class="form-control"
+                type="username"
+              />
+            </div>
+            <div class="mt-2">
+              <label for="password-input">Password</label>
+              <input
+                id="password-input"
+                v-model="login.password"
+                class="form-control"
+                type="password"
+              />
+            </div>
+            <div class="mt-4">
+              <button class="btn btn-primary w-100" type="submit">Login</button>
+            </div>
+          </form>
+        </div>
+        <div class="col-md-4"></div>
       </div>
-      <div>
-        <label>Password</label>
-        <input v-model="login.password" type="text" />
-      </div>
-      <div>
-        <button type="submit">Login</button>
-      </div>
-    </form>
-    <button @click="logUser()">Log User Info</button>
+    </div>
   </div>
 </template>
 
@@ -34,10 +52,12 @@ export default {
         data: loginInfo,
       })
     },
-    logUser() {
-      console.log(this.$auth.loggedIn)
-      console.log(JSON.stringify(this.$auth.user))
-    },
   },
 }
 </script>
+
+<style scoped>
+h1 {
+  text-align: center;
+}
+</style>

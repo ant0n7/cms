@@ -73,9 +73,7 @@
 export default {
   methods: {
     async logoutUser() {
-      await this.$auth.logout().then(() => {
-        this.$toast.success('You have been logged out')
-      })
+      await this.$auth.logout()
     },
   },
 }
