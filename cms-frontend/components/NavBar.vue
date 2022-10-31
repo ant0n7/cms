@@ -34,7 +34,7 @@
                 href="#"
                 role="button"
                 data-bs-toggle="dropdown"
-                >AccountIcon</a
+                >Account</a
               >
               <ul class="dropdown-menu">
                 <li>
