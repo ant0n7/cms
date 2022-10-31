@@ -12,6 +12,27 @@
         ></iframe>
       </div>
     </div>
+
+    <h2 class="section-heading">Manage Content</h2>
+    <div class="row">
+      <div class="col-md-4 col-12">
+        <div class="card w-100">
+          <div class="card-body">
+            <h5 class="card-title">Employees</h5>
+            <NuxtLink class="btn btn-primary" to="/employees">Manage</NuxtLink>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 col-12">
+        <div class="card w-100">
+          <div class="card-body">
+            <h5 class="card-title">News</h5>
+            <p class="card-text">This feature is currently unavailable</p>
+            <!-- <NuxtLink class="btn disabled" to="/employees">Manage</NuxtLink> -->
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

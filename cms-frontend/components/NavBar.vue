@@ -21,10 +21,10 @@
         <div id="navbarNavDropdown" class="collapse navbar-collapse">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
-              <NuxtLink class="nav-link" to="/">Employees</NuxtLink>
+              <NuxtLink class="nav-link" to="/employees">Employees</NuxtLink>
             </li>
             <li class="nav-item">
-              <NuxtLink class="nav-link" to="#">Posts</NuxtLink>
+              <NuxtLink class="nav-link disabled" to="#">Posts</NuxtLink>
             </li>
           </ul>
           <ul class="navbar-nav">

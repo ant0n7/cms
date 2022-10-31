@@ -6,8 +6,18 @@
   font-family: futura-pt, sans-serif;
 }
 
+body {
+  padding-bottom: 3rem;
+}
+
 main {
+  padding-bottom: 3rem;
+
   p {
     font-size: 20px;
   }
+}
+
+h2.section-heading {
+  margin-top: 0.8em;
 }
