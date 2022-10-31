@@ -1,6 +1,7 @@
 <template>
   <div>
-    <h1>Welcome</h1>
+    <h1 v-if="!getLoggedInName()">Welcome</h1>
+    <h1 v-else>Welcome, {{ getLoggedInName() }}!</h1>
 
     <div class="card w-100" style="height: 70vh">
       <div class="card-body">
@@ -41,10 +42,16 @@ import Vue from 'vue'
 
 export default Vue.extend({
   name: 'IndexPage',
+  data() {
+    return {}
+  },
   methods: {
     logUser() {
       console.log(this.$auth.loggedIn)
       console.log(JSON.stringify(this.$auth.user))
+    },
+    getLoggedInName() {
+      return this.$auth.user!.firstname
     },
   },
 })
