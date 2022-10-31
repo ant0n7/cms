@@ -51,6 +51,15 @@
                     >Your Website</a
                   >
                 </li>
+                <li>
+                  <button
+                    class="dropdown-item"
+                    style="color: red"
+                    @click="logoutUser"
+                  >
+                    Logout
+                  </button>
+                </li>
               </ul>
             </li>
           </ul>
@@ -59,3 +68,15 @@
     </nav>
   </div>
 </template>
+
+<script>
+export default {
+  methods: {
+    async logoutUser() {
+      await this.$auth.logout().then(() => {
+        this.$toast.success('You have been logged out')
+      })
+    },
+  },
+}
+</script>

@@ -1,36 +1,42 @@
 <template>
   <div>
-    <h1>Login</h1>
-    <p>Username: <input v-model="loginData.username" type="text" /></p>
-    <p>Password: <input v-model="loginData.password" type="password" /></p>
-    <p>
-      <button
-        @click="
-          userLogin({
-            username: loginData.username,
-            password: loginData.password,
-          })
-        "
-      >
-        Login
-      </button>
-    </p>
+    <form @submit.prevent="userLogin">
+      <div>
+        <label>Username</label>
+        <input v-model="login.username" type="text" />
+      </div>
+      <div>
+        <label>Password</label>
+        <input v-model="login.password" type="text" />
+      </div>
+      <div>
+        <button type="submit">Login</button>
+      </div>
+    </form>
+    <button @click="logUser()">Log User Info</button>
   </div>
 </template>
 
 <script>
 export default {
+  layout: 'blank',
   data() {
     return {
-      loginData: {
+      login: {
         username: '',
         password: '',
       },
     }
   },
   methods: {
-    userLogin(localLoginData) {
-      alert('Login: ' + localLoginData.username + ':' + localLoginData.password)
+    async loginUser(loginInfo) {
+      await this.$auth.loginWith('local', {
+        data: loginInfo,
+      })
+    },
+    logUser() {
+      console.log(this.$auth.loggedIn)
+      console.log(JSON.stringify(this.$auth.user))
     },
   },
 }

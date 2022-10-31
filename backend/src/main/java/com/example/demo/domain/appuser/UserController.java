@@ -1,18 +1,29 @@
 package com.example.demo.domain.appuser;
 
+import com.example.demo.domain.appuser.dto.AuthRequest;
+import com.example.demo.domain.appuser.dto.AuthResponse;
 import com.example.demo.domain.appuser.dto.CreateUserDTO;
 import com.example.demo.domain.appuser.dto.LoginDTO;
 import com.example.demo.domain.exceptions.InvalidEmailException;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.UUID;
@@ -23,6 +34,42 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserDetailsService userDetailsService;
+    @Autowired
+    private final AuthenticationManager authenticationManager;
+
+    // Test Endpoint
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return new ResponseEntity<>("Test", HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody @Valid AuthRequest authRequest) throws Exception {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+            );
+
+            User user = (User) authentication.getPrincipal();
+            String token = userService.createToken(user);
+            AuthResponse authResponse = new AuthResponse(user.getUsername(), token);
+
+            return new ResponseEntity<AuthResponse>(authResponse, HttpStatus.OK);
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>("Invalid username or password.", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> currentUser() {
+        return new ResponseEntity<>(SecurityContextHolder.getContext().getAuthentication().getPrincipal(), HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        return new ResponseEntity<>("Logout successful.", HttpStatus.OK);
+    }
 
     // @PreAuthorize("hasRole('TEACHER') || hasRole('STUDENT') || hasRole('ADMIN')")
     @Operation(summary = "List of all users.", description = "Get a list of all users with all their information.")
