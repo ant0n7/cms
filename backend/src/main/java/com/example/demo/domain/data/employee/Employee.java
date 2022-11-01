@@ -10,11 +10,9 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.example.demo.domain.data.employee.fields.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
-import com.example.demo.domain.data.employee.fields.Gender;
-import com.example.demo.domain.data.employee.fields.ProfessionalStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -47,26 +45,29 @@ public class Employee {
   private String email;
 
   // Gender (enum)
+  @ManyToOne
   private Gender gender;
 
-  // List of EmployeeTitle (i.e: lic. iur.)
-  @ElementCollection
-  private List<String> degrees;
+  @ManyToMany
+  private List<Degree> degrees;
 
   // Partner Status (Partner, Associate, Junior Associate, Counsel, ...)
+  @ManyToOne
   private ProfessionalStatus professionalStatus;
 
   // Job Title (i.e: Attorney at law)
   private String jobTitle;
 
   // List of EmployeeTraining
-  private String training;
+  @OneToMany
+  private List<EmployeeTraining> training;
 
   // List of EmployeeExperience
-  @ElementCollection
-  private List<String> experience;
+  @OneToMany
+  private List<EmployeeExperience> experience;
 
-  private String imageUrl;
+  @OneToOne
+  private EmployeeImage image;
 
   // List of EmployeeSecondaryProfesionalActivity
 
