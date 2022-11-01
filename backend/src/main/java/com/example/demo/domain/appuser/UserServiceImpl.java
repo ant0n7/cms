@@ -6,7 +6,10 @@ import com.example.demo.domain.exceptions.InvalidEmailException;
 import com.example.demo.domain.role.Role;
 import com.example.demo.domain.role.RoleRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,8 +20,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Jwts;
+
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import java.util.*;
@@ -27,6 +33,9 @@ import java.util.*;
 @RequiredArgsConstructor
 @Transactional
 public class UserServiceImpl implements UserService, UserDetailsService {
+    long EXPIRATION_DURATION = 1000 * 60 * 60 * 10; // 10 hours
+//    @Value("${app.jwt.secret}")
+    private String SECRET_KEY = "abcdefghijklmnOPQRSTUVWXYZ";
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -35,12 +44,28 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final String[] errorMessages = new String[] { "User not found", "Email is not valid",
             "Username already exists", "Email already exists" };
 
+    @Deprecated
+    @Override
+    public String createToken(User user) throws Exception {
+        return Jwts.builder()
+                .setSubject(String.format("%s,%s", user.getId(), user.getUsername()))
+                .setIssuer("detkendesign")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_DURATION))
+                .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
+    }
+
+    public String getUsernameByJwtToken(String token) {
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
+    }
+
     @Override
     // This method is used for security authentication, use caution when changing
     // this
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        User user = userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username).orElse(null);
 
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
@@ -91,14 +116,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public void addRoleToUser(String username, String rolename) {
-        User user = userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username).orElse(null);
         Role role = roleRepository.findByRolename(rolename);
+        if (user == null) return;
         user.getRoles().add(role);
     }
 
     @Override
     public User getUser(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsername(username).orElse(null);
     }
 
     @Override
@@ -117,7 +143,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public List<User> findAll() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (getRoleByUsername(auth.getName()).equals("STUDENT")) {
-            return List.of(userRepository.findByUsername(auth.getName()));
+            return List.of(Objects.requireNonNull(userRepository.findByUsername(auth.getName()).orElse(null)));
         }
         return userRepository.findAll();
     }
@@ -126,7 +152,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         try {
             // if user is requesting his own profile return true
-            return id.equals(userRepository.findByUsername(auth.getName()).getId()) ||
+            return id.equals(userRepository.findByUsername(auth.getName()).orElseThrow().getId()) ||
                     auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_TEACHER"));
         } catch (Exception e) {
             // do not grant access if user couldn't be found/verified to prevent giving a
@@ -178,7 +204,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public boolean verifyLogin(LoginDTO loginDTO) {
         try {
-            User user = userRepository.findByUsername(loginDTO.getUsername());
+            User user = userRepository.findByUsername(loginDTO.getUsername()).orElseThrow();
             if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
                 return true;
             }
