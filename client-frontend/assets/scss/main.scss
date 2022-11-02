@@ -1,0 +1,74 @@
+@import "bootstrap/scss/bootstrap";
+@import 'variables';
+
+* {
+  font-family: $font;
+  color: #fff !important;
+}
+.bg-light,body {
+  background-color: $background !important;
+}
+
+
+main {
+  p {
+    font-size: 20px;
+    text-align: justify;
+  }
+}
+
+h1 {
+  text-align: center;
+}
+
+.centered {
+  margin: auto;
+  font-size: 10vh;
+}
+
+.centered-parent {
+  padding-bottom: 10vh;
+  
+  @media screen and (max-width: 761px) {
+    padding-top: 4vh;
+  }
+}
+
+.row {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+// body::-webkit-scrollbar {
+//   display: none;
+// }
+
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#welcome-text {
+  font-size: 1.9em;
+  span {
+    font-style: italic;
+  }
+
+  span.point-out {
+    font-style: normal;
+    font-weight: 500;
+  }
+}
+
+.margin-50 {
+  margin-bottom: 50px;
+}
+
+body{
+  position: relative;
+  min-height: 100vh;
+}
+
+main{
+  padding-bottom: 25px;
+}

@@ -1,38 +1,84 @@
 package com.example.demo.domain.appuser;
 
-
+import com.example.demo.domain.appuser.dto.AuthRequest;
+import com.example.demo.domain.appuser.dto.AuthResponse;
 import com.example.demo.domain.appuser.dto.CreateUserDTO;
 import com.example.demo.domain.appuser.dto.LoginDTO;
 import com.example.demo.domain.exceptions.InvalidEmailException;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 @CrossOrigin
-@RestController @RequestMapping("/api/users")
+@RestController
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserDetailsService userDetailsService;
+    @Autowired
+    private final AuthenticationManager authenticationManager;
 
-    @PreAuthorize("hasRole('TEACHER') || hasRole('STUDENT') || hasRole('ADMIN')")
+    // Test Endpoint
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return new ResponseEntity<>("Test", HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody @Valid AuthRequest authRequest) throws Exception {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+            );
+
+            User user = (User) authentication.getPrincipal();
+            String token = userService.createToken(user);
+            AuthResponse authResponse = new AuthResponse(user.getUsername(), token);
+
+            return new ResponseEntity<AuthResponse>(authResponse, HttpStatus.OK);
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>("Invalid username or password.", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> currentUser() {
+        return new ResponseEntity<>(SecurityContextHolder.getContext().getAuthentication().getPrincipal(), HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        return new ResponseEntity<>("Logout successful.", HttpStatus.OK);
+    }
+
+    // @PreAuthorize("hasRole('TEACHER') || hasRole('STUDENT') || hasRole('ADMIN')")
     @Operation(summary = "List of all users.", description = "Get a list of all users with all their information.")
     @GetMapping("/")
     public ResponseEntity<Collection<User>> findAll() {
         return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('TEACHER')")
+    // @PreAuthorize("hasRole('TEACHER')")
     @Operation(summary = "Save a single user.", description = "Save a single user to the database. The API automatically encrypts the password with BCrypt and generates an UUID.")
     @PostMapping("/")
     public ResponseEntity<User> createUser(@Valid @RequestBody CreateUserDTO user)
@@ -40,38 +86,40 @@ public class UserController {
         return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
     }
 
-
-    @PreAuthorize("#username == authentication.principal.username || hasRole('TEACHER')")
+    // @PreAuthorize("#username == authentication.principal.username ||
+    // hasRole('TEACHER')")
     @Operation(summary = "Get an user by username.", description = "Receive a single user with all available Information by its username.")
     @GetMapping("/uname/{username}")
-    public ResponseEntity<User> getByUsername(@Parameter(name = "Username", description = "Unique username of the user requested") @PathVariable String username) {
+    public ResponseEntity<User> getByUsername(
+            @Parameter(name = "Username", description = "Unique username of the user requested") @PathVariable String username) {
         return new ResponseEntity<>(userService.getUser(username), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('TEACHER') || hasRole('STUDENT')")
+    // // @PreAuthorize("hasRole('TEACHER') || hasRole('STUDENT')")
     @Operation(summary = "Get an user by ID.", description = "Receive a single user with all available Information by its UUID.")
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable UUID id) throws InstanceNotFoundException {
         return new ResponseEntity<>(userService.findById(id).orElse(null), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('TEACHER')")
-    @Operation(summary = "Get students by subject id.", description = "Receive a list of students that are attending the given subject")
+    // @PreAuthorize("hasRole('TEACHER')")
+    @Operation(summary = "Removed Endpoint.", description = "This endpoint got removed from the API.")
     @GetMapping("/subject/{id}")
-    public ResponseEntity<List<User>> getUsersFromSubject(@PathVariable UUID id) throws InstanceNotFoundException {
-        return new ResponseEntity<>(userService.findUsersBySubject(id), HttpStatus.OK);
+    public ResponseEntity<String> getUsersFromSubject(@PathVariable UUID id) throws InstanceNotFoundException {
+        return new ResponseEntity<>("Removed endpoint", HttpStatus.SERVICE_UNAVAILABLE);
     }
-    @PreAuthorize("hasRole('TEACHER')")
-    @Operation(summary = "Get students by class id.", description = "Receive a list of students that are attending the given class")
+
+    // @PreAuthorize("hasRole('TEACHER')")
+    @Operation(summary = "Removed Endpoint.", description = "This endpoint got removed from the API.")
     @GetMapping("/class/{id}")
-    public ResponseEntity<List<User>> getUsersFromClass(@PathVariable UUID id) throws InstanceNotFoundException {
-        return new ResponseEntity<>(userService.findUsersByClass(id), HttpStatus.OK);
+    public ResponseEntity<String> getUsersFromClass(@PathVariable UUID id) throws InstanceNotFoundException {
+        return new ResponseEntity<>("Removed endpoint", HttpStatus.SERVICE_UNAVAILABLE);
     }
 
-
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{username}/role/{rolename}")
-    public ResponseEntity<String> addRoleToUser(@PathVariable("username") String username, @PathVariable("rolename") String rolename) {
+    public ResponseEntity<String> addRoleToUser(@PathVariable("username") String username,
+            @PathVariable("rolename") String rolename) {
         try {
             userService.addRoleToUser(username, rolename);
         } catch (Exception e) {
@@ -80,34 +128,39 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-    @PreAuthorize("hasRole('TEACHER')")
+    // @PreAuthorize("hasRole('TEACHER')")
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@Parameter(description = "UUID of the user to change.") @PathVariable UUID id, @Valid @RequestBody User user) throws InstanceNotFoundException, InstanceAlreadyExistsException, InvalidEmailException {
+    public ResponseEntity<User> updateUser(
+            @Parameter(description = "UUID of the user to change.") @PathVariable UUID id,
+            @Valid @RequestBody User user)
+            throws InstanceNotFoundException, InstanceAlreadyExistsException, InvalidEmailException {
         return new ResponseEntity<>(userService.updateUser(id, user), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('TEACHER')")
+    // @PreAuthorize("hasRole('TEACHER')")
     @Operation(summary = "Delete a user by ID.", description = "Delete a single user by its ID.")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@Parameter(description = "UUID of the user to delete.") @PathVariable UUID id) throws InstanceNotFoundException {
+    public ResponseEntity<String> deleteUser(
+            @Parameter(description = "UUID of the user to delete.") @PathVariable UUID id)
+            throws InstanceNotFoundException {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(summary = "Verify Login.")
     @GetMapping("/login/{username}/{pw}")
-    public ResponseEntity<Boolean> verifyLogin(@PathVariable String username, @PathVariable String pw) throws InstanceNotFoundException {
+    public ResponseEntity<Boolean> verifyLogin(@PathVariable String username, @PathVariable String pw)
+            throws InstanceNotFoundException {
         return new ResponseEntity<>(userService.verifyLogin(new LoginDTO(username, pw)), HttpStatus.OK);
     }
 
     @Operation(summary = "Get Role of user.")
     @GetMapping("/{username}/role")
-    @PreAuthorize("#username == authentication.principal.username || hasRole('TEACHER')")
+    // @PreAuthorize("#username == authentication.principal.username ||
+    // hasRole('TEACHER')")
     public ResponseEntity<String> getRole(@PathVariable String username) throws InstanceNotFoundException {
         return new ResponseEntity<>(userService.getRoleByUsername(username), HttpStatus.OK);
     }
-
 
     @ExceptionHandler(InstanceNotFoundException.class)
     public ResponseEntity<String> handleInstanceNotFoundException(InstanceNotFoundException e) {

@@ -1,0 +1,27 @@
+@import 'variables';
+
+.team-title-row {
+  margin-bottom: 7px;
+}
+
+.team-desc-row {
+  margin-top: 7px;
+}
+
+h2.team-title {
+  margin-bottom: 0;
+}
+
+img.team-img {
+  width: 100%;
+  height: auto;
+  border-radius: $border-radius;
+
+  @media screen and (max-width: 600px) {
+    width: 100%;
+  }
+}
+
+// p.team-job {
+//   opacity: 50%;
+// }

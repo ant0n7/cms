@@ -26,4 +26,4 @@ hs_err_pid*
 build/
 .gradle/
 
-logs/application.log
+logs/application.log*
