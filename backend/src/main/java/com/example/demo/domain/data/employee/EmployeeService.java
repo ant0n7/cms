@@ -9,4 +9,7 @@ public interface EmployeeService {
   boolean setFileCodeForEmployeeId(UUID employeeId, String filecode);
   Employee getEmployeeById(UUID id) throws NoSuchElementException;
   String getImageIdByEmployeeId(UUID employeeId);
+  boolean updateEmployee(UUID id, Employee employee);
+  Employee createEmployee(Employee employee);
+  void delete(UUID id);
 }

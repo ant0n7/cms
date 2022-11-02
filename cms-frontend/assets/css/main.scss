@@ -1,6 +1,7 @@
 @use '~bootstrap/scss/bootstrap' as bootstrap;
 @use 'variables';
 @use 'bars';
+@use 'utils';
 
 * {
   font-family: futura-pt, sans-serif;

@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.beanutils.BeanUtils;
+
 import com.example.demo.domain.data.employee.fields.EmployeeImage;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +44,21 @@ public class EmployeeServiceImpl implements EmployeeService {
   }
 
   @Override
+  public boolean updateEmployee(UUID id, Employee employee) {
+    Employee old = employeeRepository.findById(id).orElse(null);
+    if (old == null || employee == null) return false;
+
+    try {
+      BeanUtils.copyProperties(old, employee);
+    } catch (Exception e) {
+      return false;
+    }
+
+    employeeRepository.save(old);
+    return true;
+  }
+
+  @Override
   public String getImageIdByEmployeeId(UUID employeeId) throws NoSuchElementException {
     Employee employee = getEmployeeById(employeeId);
 
@@ -51,5 +68,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     return "uzPFIDsZ"; // default picture
 //    throw new NoSuchElementException();
+  }
+
+  @Override
+  public Employee createEmployee(Employee employee) {
+    return employeeRepository.save(employee);
+  }
+
+  @Override
+  public void delete(UUID id) {
+    employeeRepository.deleteById(id);
   }
 }

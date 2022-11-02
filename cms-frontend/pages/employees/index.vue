@@ -1,7 +1,15 @@
 <template>
   <div>
-    <h1>Employees</h1>
-    <p>This section is for display purposes only.</p>
+    <div class="row">
+      <div
+        class="col-12 d-flex flex-row justify-content-between align-items-center"
+      >
+        <h1 class="">Employee</h1>
+        <NuxtLink :to="`/employees/undefined/edit`" class="btn btn-primary"
+          >Add</NuxtLink
+        >
+      </div>
+    </div>
 
     <client-only>
       <div v-if="employees.length > 0" class="row">
@@ -10,17 +18,15 @@
           :key="employee.id"
           class="col-md-4 col-12"
         >
-          <BasicCard
-            class="mb-4"
-            :title="`${employee.firstname} ${employee.lastname}`"
-            :subtitle="employee.jobTitle"
-            :img-src="
-              'data:image/jpg;base64,' +
-              getEmployeeImage(employee).then((res) => res.toString('base64'))
-            "
-          >
-            <p class="card-text">{{ employee.email }}</p>
-          </BasicCard>
+          <NuxtLink class="link-unstyled" :to="`/employees/${employee.id}`">
+            <BasicCard
+              class="mb-4"
+              :title="`${employee.firstname} ${employee.lastname}`"
+              :subtitle="employee.jobTitle"
+            >
+              <p class="card-text">{{ employee.email }}</p>
+            </BasicCard>
+          </NuxtLink>
         </div>
       </div>
       <div v-else-if="employees.length == 0">
@@ -37,7 +43,6 @@
 
 <script lang="ts">
 import { Buffer } from 'buffer'
-import { response } from 'express'
 import Vue from 'vue'
 // import Employee from assets/types
 // import Employee from '~/types'
@@ -51,39 +56,33 @@ class Employee {
 }
 
 export default Vue.extend({
-  // name: 'EmployeesPage',
   data: () => ({
     employees: new Array<Employee>(),
   }),
   async fetch() {
     this.employees = await this.$axios.$get('/data/employees/')
-    // this.employees.forEach(async (employee: Employee) => {
-    //   await this.$axios
-    //     .$get(`/data/employees/${employee.id}/image`)
-    //     .then((response) => {
-    //       const imageEncoded = Buffer.from(response, 'base64')
-    //       ;(<HTMLImageElement>(
-    //         document!.getElementById(employee.id + '_image')
-    //       ))!.src = `data:image/jpg;base64,${imageEncoded}`
-    //     })
-    // })
   },
   methods: {
-    async getEmployeeImage(employee: Employee): Promise<Buffer> {
-      // await this.$axios
-      //   .$get(`/data/employees/${employee.id}/image`)
-      //   .then((response: string) => {
-      //     const imageEncoded = Buffer.from(response, 'base64')
-      //     ;(<HTMLImageElement>(
-      //       document!.getElementById(employee.id + '_image')
-      //     ))!.src = `data:image/jpg;base64,${imageEncoded}`
-      //   })
-      const response = await this.$axios.$get(
-        `/data/employees/${employee.id}/image`
-      )
+    // async getEmployeeImage(employee: Employee): Promise<string> {
+    // await this.$axios
+    //   .$get(`/data/employees/${employee.id}/image`)
+    //   .then((response: string) => {
+    //     const imageEncoded = Buffer.from(response, 'base64')
+    //     ;(<HTMLImageElement>(
+    //       document!.getElementById(employee.id + '_image')
+    //     ))!.src = `data:image/jpg;base64,${imageEncoded}`
+    //   })
+    // const response: Promise<string> =
+    // let encoded = ''
 
-      return Buffer.from(response)
-    },
+    // await this.$axios
+    //   .$get(`/data/employees/${employee.id}/image`)
+    //   .then((response: string) => {
+    //     encoded = Buffer.from(response).toString('base64')
+    //   })
+
+    // return encoded
+    // },
     base64Encode(s: string) {
       return Buffer.from(s).toString('base64')
     },

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import com.example.demo.domain.appuser.User;
 import com.example.demo.domain.data.file.FileDownloadUtil;
 import com.example.demo.domain.data.file.FileUploadResponse;
 import com.example.demo.domain.data.file.FileUploadUtil;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 
 
 @CrossOrigin
@@ -36,6 +39,36 @@ public class EmployeeController {
   @GetMapping({"/", ""})
   public ResponseEntity<List<Employee>> findAll() {
     return new ResponseEntity<>(employeeService.findAll(), HttpStatus.OK);
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<Employee> find(
+          @PathVariable("id") UUID id
+  ) {
+    return new ResponseEntity<>(employeeService.getEmployeeById(id), HttpStatus.OK);
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<?> updateEmployee(
+          @PathVariable("id") UUID id,
+          @Valid @RequestBody Employee employee
+          ) {
+    return new ResponseEntity<>(employeeService.updateEmployee(id, employee) ? HttpStatus.OK : HttpStatus.CONFLICT);
+  }
+
+  @PostMapping("/")
+  public ResponseEntity<?> create(
+          @Valid @RequestBody Employee employee
+          ) {
+    return new ResponseEntity<>(employeeService.createEmployee(employee), HttpStatus.OK);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> delete(
+          @PathVariable("id") UUID id
+  ) {
+    employeeService.delete(id);
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 
   @PostMapping("/{id}/image")

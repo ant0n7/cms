@@ -40,7 +40,6 @@ public class Employee {
   private String lastname;
 
   @Email
-  @NotNull
   @Column(unique = true)
   private String email;
 
@@ -57,6 +56,8 @@ public class Employee {
 
   // Job Title (i.e: Attorney at law)
   private String jobTitle;
+
+  private String description;
 
   // List of EmployeeTraining
   @OneToMany
