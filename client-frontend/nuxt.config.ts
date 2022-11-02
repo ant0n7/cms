@@ -10,6 +10,13 @@ export default defineNuxtConfig({
     "~/assets/scss/gallery.scss",
   ],
 
+  // https://v3.nuxtjs.org/api/configuration-modules
+  // modules: ["@nuxtjs/axios"],
+  // Axios module configuration: https://go.nuxtjs.dev/config-axios
+  // axios: {
+  //   baseURL: "http://localhost:8080/api",
+  // },
+
   app: {
     head: {
       title: "Detken Design - Webdesign für Anwaltskanzleien",
