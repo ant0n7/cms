@@ -48,6 +48,11 @@ public class EmployeeController {
 
     String filecode = FileUploadUtil.saveFile(fileName, file);
 
+    if (!employeeService.setFileCodeForEmployeeId(employeeId, filecode))
+      return new ResponseEntity<>(
+              "Something wrent wrong while assigning the image to the employee",
+              HttpStatus.NOT_FOUND);
+
     FileUploadResponse.FileUploadResponseBuilder responseBuilder = FileUploadResponse.builder()
             .fileName(fileName)
             .size(size)
@@ -56,13 +61,20 @@ public class EmployeeController {
     return new ResponseEntity<>(responseBuilder.build(), HttpStatus.OK);
   }
 
+  @GetMapping("/{id}/image")
+  public ResponseEntity<?> imageDownload(
+          @PathVariable("id") UUID employeeId
+  ) {
+    return downloadFileByFileCode(employeeService.getImageIdByEmployeeId(employeeId));
+  }
+
   @GetMapping("/images/{fileCode}")
   public ResponseEntity<?> downloadFileByFileCode(
           @PathVariable("fileCode") String fileCode
   ) {
     FileDownloadUtil downloadUtil = new FileDownloadUtil();
 
-    Resource resource = null;
+    Resource resource;
     try {
       resource = downloadUtil.getFileAsResource(fileCode);
     } catch (IOException e) {
@@ -73,7 +85,6 @@ public class EmployeeController {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    MediaType contentType = MediaType.APPLICATION_OCTET_STREAM;
     String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
 
     return ResponseEntity.ok()

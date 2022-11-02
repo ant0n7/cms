@@ -23,7 +23,7 @@ public class FileDownloadUtil {
         Path dirPath = Paths.get("Files-Upload");
 
         Files.list(dirPath).forEach(file -> {
-            if (file.getFileName().toString().startsWith(fileCode)) {
+            if (file.getFileName().toString().equals(fileCode)) {
                 foundFile = file;
                 return;
             }

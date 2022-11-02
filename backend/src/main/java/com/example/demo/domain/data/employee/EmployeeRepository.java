@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
   List<Employee> findAll();
+  Employee save(Employee employee);
 }

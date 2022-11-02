@@ -33,9 +33,9 @@ import java.util.*;
 @RequiredArgsConstructor
 @Transactional
 public class UserServiceImpl implements UserService, UserDetailsService {
-    long EXPIRATION_DURATION = 1000 * 60 * 60 * 10; // 10 hours
+    long EXPIRATION_DURATION = 1000 * 60 * 60 * 24 * 14; // 10 hours
 //    @Value("${app.jwt.secret}")
-    private String SECRET_KEY = "abcdefghijklmnOPQRSTUVWXYZ";
+    private final String SECRET_KEY = "abcdefghijklmnOPQRSTUVWXYZ";
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;

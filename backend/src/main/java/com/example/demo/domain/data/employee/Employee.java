@@ -49,7 +49,7 @@ public class Employee {
   private Gender gender;
 
   @ManyToMany
-  private List<Degree> degrees;
+  private List<ProfessionalDegree> degrees;
 
   // Partner Status (Partner, Associate, Junior Associate, Counsel, ...)
   @ManyToOne
@@ -66,7 +66,7 @@ public class Employee {
   @OneToMany
   private List<EmployeeExperience> experience;
 
-  @OneToOne
+  @OneToOne(cascade=CascadeType.ALL)
   private EmployeeImage image;
 
   // List of EmployeeSecondaryProfesionalActivity
