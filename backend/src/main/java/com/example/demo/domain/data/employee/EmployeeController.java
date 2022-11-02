@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import com.example.demo.domain.appuser.User;
 import com.example.demo.domain.data.file.FileDownloadUtil;
 import com.example.demo.domain.data.file.FileUploadResponse;
 import com.example.demo.domain.data.file.FileUploadUtil;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 
 
 @CrossOrigin
@@ -38,6 +41,36 @@ public class EmployeeController {
     return new ResponseEntity<>(employeeService.findAll(), HttpStatus.OK);
   }
 
+  @GetMapping("/{id}")
+  public ResponseEntity<Employee> find(
+          @PathVariable("id") UUID id
+  ) {
+    return new ResponseEntity<>(employeeService.getEmployeeById(id), HttpStatus.OK);
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<?> updateEmployee(
+          @PathVariable("id") UUID id,
+          @Valid @RequestBody Employee employee
+          ) {
+    return new ResponseEntity<>(employeeService.updateEmployee(id, employee) ? HttpStatus.OK : HttpStatus.CONFLICT);
+  }
+
+  @PostMapping("/")
+  public ResponseEntity<?> create(
+          @Valid @RequestBody Employee employee
+          ) {
+    return new ResponseEntity<>(employeeService.createEmployee(employee), HttpStatus.OK);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> delete(
+          @PathVariable("id") UUID id
+  ) {
+    employeeService.delete(id);
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
+
   @PostMapping("/{id}/image")
   public ResponseEntity<?> imageUpload(
           @PathVariable("id") UUID employeeId,
@@ -48,6 +81,11 @@ public class EmployeeController {
 
     String filecode = FileUploadUtil.saveFile(fileName, file);
 
+    if (!employeeService.setFileCodeForEmployeeId(employeeId, filecode))
+      return new ResponseEntity<>(
+              "Something wrent wrong while assigning the image to the employee",
+              HttpStatus.NOT_FOUND);
+
     FileUploadResponse.FileUploadResponseBuilder responseBuilder = FileUploadResponse.builder()
             .fileName(fileName)
             .size(size)
@@ -56,13 +94,20 @@ public class EmployeeController {
     return new ResponseEntity<>(responseBuilder.build(), HttpStatus.OK);
   }
 
+  @GetMapping("/{id}/image")
+  public ResponseEntity<?> imageDownload(
+          @PathVariable("id") UUID employeeId
+  ) {
+    return downloadFileByFileCode(employeeService.getImageIdByEmployeeId(employeeId));
+  }
+
   @GetMapping("/images/{fileCode}")
   public ResponseEntity<?> downloadFileByFileCode(
           @PathVariable("fileCode") String fileCode
   ) {
     FileDownloadUtil downloadUtil = new FileDownloadUtil();
 
-    Resource resource = null;
+    Resource resource;
     try {
       resource = downloadUtil.getFileAsResource(fileCode);
     } catch (IOException e) {
@@ -73,7 +118,6 @@ public class EmployeeController {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    MediaType contentType = MediaType.APPLICATION_OCTET_STREAM;
     String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
 
     return ResponseEntity.ok()

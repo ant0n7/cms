@@ -25,7 +25,7 @@ public class FileUploadUtil {
         String fileCode = RandomStringUtils.randomAlphabetic(8);
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            Path filePath = uploadPath.resolve(fileCode + "-" + fileName);
+            Path filePath = uploadPath.resolve(fileCode);
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new IOException("Unable to save file: " + fileName, e);

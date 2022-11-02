@@ -3,11 +3,9 @@ package com.example.demo.domain.data.employee.fields;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.UUID;
 
 /**
@@ -18,11 +16,12 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-public class EmployeeExperience {
+public class ProfessionalDegree {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    UUID id;
+    private UUID id;
 
     @NotNull
-    String description;
+    @Column(nullable = false)
+    private String rolename;
 }

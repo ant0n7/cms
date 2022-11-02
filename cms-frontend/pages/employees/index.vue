@@ -1,39 +1,91 @@
 <template>
   <div>
-    <h1>Employees</h1>
-    <p>This section is for display purposes only.</p>
-
-    <div v-if="employees.length > 0" class="row">
+    <div class="row">
       <div
-        v-for="employee in employees"
-        :key="employee"
-        class="col-md-4 col-12"
+        class="col-12 d-flex flex-row justify-content-between align-items-center"
       >
-        <div class="card w-100">
-          <div class="card-body">
-            <h5 class="card-title">
-              {{ employee.firstname }} {{ employee.lastname }}
-            </h5>
-            <p class="card-text">{{ employee.jobTitle }}</p>
-            <p class="card-text">{{ employee.email }}</p>
-          </div>
-        </div>
+        <h1 class="">Employee</h1>
+        <NuxtLink :to="`/employees/undefined/edit`" class="btn btn-primary"
+          >Add</NuxtLink
+        >
       </div>
     </div>
+
+    <client-only>
+      <div v-if="employees.length > 0" class="row">
+        <div
+          v-for="employee in employees"
+          :key="employee.id"
+          class="col-md-4 col-12"
+        >
+          <NuxtLink class="link-unstyled" :to="`/employees/${employee.id}`">
+            <BasicCard
+              class="mb-4"
+              :title="`${employee.firstname} ${employee.lastname}`"
+              :subtitle="employee.jobTitle"
+            >
+              <p class="card-text">{{ employee.email }}</p>
+            </BasicCard>
+          </NuxtLink>
+        </div>
+      </div>
+      <div v-else-if="employees.length == 0">
+        <div class="alert alert-warning" role="alert">No employees found.</div>
+      </div>
+      <div v-else>
+        <div class="alert alert-error" role="alert">
+          Couldn't load employees.
+        </div>
+      </div>
+    </client-only>
   </div>
 </template>
 
 <script lang="ts">
+import { Buffer } from 'buffer'
 import Vue from 'vue'
-// import Employee from '~/assets/types/employee'
+// import Employee from assets/types
+// import Employee from '~/types'
+
+class Employee {
+  id?: string
+  firstname?: string
+  lastname?: string
+  email?: string
+  jobTitle?: string
+}
 
 export default Vue.extend({
-  // name: 'EmployeesPage',
   data: () => ({
-    employees: [],
+    employees: new Array<Employee>(),
   }),
   async fetch() {
     this.employees = await this.$axios.$get('/data/employees/')
+  },
+  methods: {
+    // async getEmployeeImage(employee: Employee): Promise<string> {
+    // await this.$axios
+    //   .$get(`/data/employees/${employee.id}/image`)
+    //   .then((response: string) => {
+    //     const imageEncoded = Buffer.from(response, 'base64')
+    //     ;(<HTMLImageElement>(
+    //       document!.getElementById(employee.id + '_image')
+    //     ))!.src = `data:image/jpg;base64,${imageEncoded}`
+    //   })
+    // const response: Promise<string> =
+    // let encoded = ''
+
+    // await this.$axios
+    //   .$get(`/data/employees/${employee.id}/image`)
+    //   .then((response: string) => {
+    //     encoded = Buffer.from(response).toString('base64')
+    //   })
+
+    // return encoded
+    // },
+    base64Encode(s: string) {
+      return Buffer.from(s).toString('base64')
+    },
   },
 })
 </script>
